@@ -1,0 +1,528 @@
+{
+  "name": "Flowers_Promt",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        64
+      ],
+      "id": "080d723d-6b9c-43c0-9562-0fc5fd94815e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1bvcW_CJWRHHNHegnLgfkF_tF1P9Mf9Xr",
+            "mode": "list",
+            "cachedResultName": "N8N_Berezka4",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1bvcW_CJWRHHNHegnLgfkF_tF1P9Mf9Xr"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        64
+      ],
+      "id": "233cd534-8121-4e01-a5fb-fce488626e57",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2FwMGPZmjF0z8Wwr",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        592,
+        64
+      ],
+      "id": "d01d965e-101a-4944-8cc7-2f4a83b18fb1",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nflowerspromt",
+          "mode": "list",
+          "cachedResultName": "n8nflowerspromt"
+        },
+        "options": {
+          "pineconeNamespace": "flowerpromtcopy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        80
+      ],
+      "id": "cd0e6611-4e10-4ea9-874c-5b9594974cc3",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "yHZRqmRl86QPtzT2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        784,
+        288
+      ],
+      "id": "a6964d4a-bd97-4a11-87ab-e6709995c397",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 600,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        784,
+        432
+      ],
+      "id": "6ced50ce-97dc-4410-8d23-3d34a5062845",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text}}",
+        "options": {
+          "systemMessage": "Ты консультант по продаже цветов и составлению букетов. Отвечай вежливо, старайся добавить советы по составлению букетов. Давай развернутый ответ."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1648,
+        80
+      ],
+      "id": "f5f86c6d-6ca1-455d-8f7a-a185f84fa36e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        272
+      ],
+      "id": "41f68dd0-954b-41a7-beb4-376f8f0da22c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "jYSCp3CxVwdeM69D",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "vectorStore",
+        "toolDescription": "Это vectorStore где ты можешь найти всю информацию о нашем бизнесе.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8nflowerspromt",
+          "mode": "list",
+          "cachedResultName": "n8nflowerspromt"
+        },
+        "options": {
+          "pineconeNamespace": "flowerpromtcopy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        1776,
+        272
+      ],
+      "id": "e59e5bb5-3552-4558-9c50-587f013caeae",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "yHZRqmRl86QPtzT2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c2a372e-b595-45f2-8cf0-d1dd2c79bc2b",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        80
+      ],
+      "id": "ff0b92b3-1798-4064-bcbb-c4ff8e3222cd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        80
+      ],
+      "id": "a4317c17-9b2e-46a2-ae37-715a5d47c26e",
+      "name": "Telegram",
+      "webhookId": "8aadb2e0-1f19-4a87-a9d2-3306a8028c1b",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wvu8hLy7qBZOKe7I",
+          "name": "@berezka4bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        64
+      ],
+      "id": "3e8a1978-cfcd-4523-ba7f-29fa05e00e08",
+      "name": "Download",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2FwMGPZmjF0z8Wwr",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Загрузка в цикле",
+        "height": 572,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c5c9a070-8647-4ef4-b5d3-213c6468e2c6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Агент ",
+        "height": 572,
+        "width": 1040,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "0c405c72-325d-4c99-929d-51adbe03203c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        80
+      ],
+      "id": "02c5b772-3db3-4f1e-ac7b-fd7b2bd1a690",
+      "name": "Telegram Trigger",
+      "webhookId": "78840919-c01e-4452-98fb-d5cd34d4958b",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wvu8hLy7qBZOKe7I",
+          "name": "@berezka4bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        288
+      ],
+      "id": "724e0693-b989-415e-b6e3-e9ac9a862c45",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "sJqLyjLAUEPhzJsH",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        416
+      ],
+      "id": "0e52f47f-2a43-4d13-bc0c-4fd51e49edbd",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "sJqLyjLAUEPhzJsH",
+          "name": "OpenAi account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "e3a4dce1-7905-4992-8c4f-3fa3d753998d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d15e9a08d28feb708099abd22af10ef93ad78f389dbf7744f8557e60dc57be64"
+  },
+  "id": "fGh7lPhgS1lehtHH",
+  "tags": []
+}
